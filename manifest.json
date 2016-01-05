@@ -1,0 +1,20 @@
+{
+  "manifest_version": 2,
+
+  "name": "Hangouts Helper",
+  "description": "This extension lets you use Google Hangouts as a Pet Webcam",
+  "version": "0.1",
+  "browser_action": {
+    "default_icon": "icon.png"
+  },
+  "permissions": [
+          "storage"
+  ],
+  "content_scripts": [
+    {
+      "matches": ["https://plus.google.com/hangouts*"],
+      "js": ["jquery.js", "hangouts-helper.js"]
+    }
+  ],
+  "options_page": "options.html"
+}
