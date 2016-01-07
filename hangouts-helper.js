@@ -8,14 +8,18 @@
                 callback();
             }
             else{
-                alert("Please set an authorized user in the extension options.");
+                var newAuthUser = prompt("Please input the full name, as it appears in Gmail, of the authorized user of the webcam (eg: your personal account).");
+                chrome.storage.sync.set({
+                    authUser: newAuthUser
+                }, function() {
+                    authUser = newAuthUser;
+                    callback();
+                });
             }
         });
     }
 
     var hangoutsCheckers = function(){
-
-        alert(authUser);
         var joinAttempts = 0;
         var maxJoinAttempts = 20;
         var simulate = function(target, evtName)
