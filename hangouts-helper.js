@@ -14,6 +14,7 @@
     }
 
     var hangoutsCheckers = function(){
+
         alert(authUser);
         var joinAttempts = 0;
         var maxJoinAttempts = 20;
@@ -95,37 +96,67 @@
         }
 
         var manageWebCam = function(){
-            var statusEl = $("div[role='status']"); 
-            getCameraEl();
-            var cameraOn = true;
-            var alone = true;
-            if(statusEl.text() == "Waiting for people to join this video call..."){
-              alone = true;
-            }
-            else {
-              alone = false;
-            }
-            if(alone){
-              if(cameraEl.attr('aria-label').indexOf("Turn camera off") > -1){
-                console.log("No one's here. Turning off camera");
-                simulateClick(cameraEl.get(0));
-              }
-            }
-            else{
-              if(cameraEl.attr('aria-label').indexOf("Turn camera on") > -1){
-                console.log("Someone's here. Turning on camera");
-                simulateClick(cameraEl.get(0));
-              }
-            }
-            setTimeout(manageWebCam, 6000);
-        }
+             var statusEl = $("div[role='status']"); 
+             getCameraEl();
+             var cameraOn = true;
+             var authUserString = "Open menu for " + authUser;
+             var authUserAway = true;
+             
+             $("div[role='menuitem']").each(
+                 function(){
+                     var aria = $(this).attr('aria-label');
+                     if(typeof aria !== "undefined"){
+                         if(aria.indexOf(authUser) > -1){
+                             authUserAway = false;
+                         }
+                     }
+                 });
+             
+             if(authUserAway){
+                 if(cameraEl.attr('aria-label').indexOf("Turn camera off") > -1){
+                     console.log("No Auth User present. Turning off camera");
+                     updateIcon("off");
+                     simulateClick(cameraEl.get(0));
+                 }
+             }
+             else{
+                 if(cameraEl.attr('aria-label').indexOf("Turn camera on") > -1){
+                     console.log("Auth User present. Turning on camera");
+                     updateIcon("on");
+                     simulateClick(cameraEl.get(0));
+                 }
+             }
+             setTimeout(manageWebCam, 6000);
+         }
 
         joinCall();
-        //setTimeout(window.reload, 360000);
+        setTimeout(window.reload, 360000);
+    }
+
+    function updateIcon(status){
+        var filePath
+        if(status == "on"){
+            filePath = "icon-active.png";
+        }
+        else{
+            filePath = "icon.png";
+        }
+        msg = {
+            task: "updateIcon",
+            filePath: filePath
+        }
+        sendMessage(msg);
+    }
+
+    function sendMessage(msg){
+        chrome.runtime.sendMessage(msg, function() {
+          console.log("Message processed successfully.");
+        });
     }
 
     function init()
     {
+        updateIcon("off");
         $(document).ready(function(){
             getSettings(hangoutsCheckers);
         });
